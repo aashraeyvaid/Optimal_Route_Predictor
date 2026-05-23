@@ -1,0 +1,13 @@
+driver_id,home_region,hub_latitude,hub_longitude,avg_speed_kmph,max_daily_stops,experience_level
+D01,central,23.0225,72.5714,24.94,10,new
+D02,north,23.079,72.585,28.53,7,senior
+D03,south,22.972,72.592,24.63,9,new
+D04,east,23.03,72.655,30.37,7,senior
+D05,west,23.04,72.5,31.65,8,senior
+D06,industrial,22.998,72.62,28.0,9,standard
+D07,central,23.0225,72.5714,24.43,8,new
+D08,north,23.079,72.585,29.93,10,standard
+D09,south,22.972,72.592,34.81,9,senior
+D10,east,23.03,72.655,29.58,7,senior
+D11,west,23.04,72.5,29.78,8,senior
+D12,industrial,22.998,72.62,34.78,7,senior
