@@ -17,6 +17,19 @@ class RouteApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["status"], "ok")
 
+    def test_dashboard_and_metadata_endpoints(self) -> None:
+        dashboard = self.client.get("/")
+        self.assertEqual(dashboard.status_code, 200)
+        self.assertIn("Optimal Route Predictor Dashboard", dashboard.text)
+
+        drivers = self.client.get("/drivers")
+        self.assertEqual(drivers.status_code, 200)
+        self.assertGreaterEqual(len(drivers.json()), 10)
+
+        locations = self.client.get("/locations")
+        self.assertEqual(locations.status_code, 200)
+        self.assertGreaterEqual(len(locations.json()), 50)
+
     def test_daily_endpoint(self) -> None:
         response = self.client.post(
             "/predict/daily",

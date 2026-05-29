@@ -54,6 +54,49 @@ class RoutePredictionService:
             "google_live_enabled": self.google_client.live_enabled,
         }
 
+    def list_drivers(self) -> list[dict[str, Any]]:
+        driver_profiles = self.model.driver_profiles
+        rows: list[dict[str, Any]] = []
+        for driver in self.drivers.sort_values("driver_id").to_dict("records"):
+            driver_id = str(driver["driver_id"])
+            profile = driver_profiles.get(driver_id, {})
+            rows.append(
+                {
+                    "driver_id": driver_id,
+                    "home_region": str(driver["home_region"]),
+                    "hub_latitude": float(driver["hub_latitude"]),
+                    "hub_longitude": float(driver["hub_longitude"]),
+                    "experience_level": str(driver["experience_level"]),
+                    "avg_speed_kmph": round(float(profile.get("avg_speed_kmph", driver["avg_speed_kmph"])), 2),
+                    "daily_visits": round(float(profile.get("daily_visits", driver["max_daily_stops"])), 1),
+                    "route_efficiency": round(float(profile.get("route_efficiency", 0.72)), 3),
+                    "max_daily_stops": int(driver["max_daily_stops"]),
+                }
+            )
+        return rows
+
+    def list_locations(self) -> list[dict[str, Any]]:
+        locations = self._locations_with_profiles().sort_values("location_id")
+        rows: list[dict[str, Any]] = []
+        for location in locations.to_dict("records"):
+            rows.append(
+                {
+                    "location_id": str(location["location_id"]),
+                    "location_code": str(location["location_code"]),
+                    "location_name": str(location["location_name"]),
+                    "place_id": str(location["place_id"]),
+                    "latitude": float(location["latitude"]),
+                    "longitude": float(location["longitude"]),
+                    "region": str(location["region"]),
+                    "traffic_category": str(location["traffic_category"]),
+                    "store_density": round(float(location["store_density"]), 3),
+                    "priority": int(location["priority"]),
+                    "avg_visit_duration_min": round(float(location.get("avg_visit_duration_min", 20.0)), 1),
+                    "historical_visits": int(float(location.get("historical_visits", 0.0))),
+                }
+            )
+        return rows
+
     def predict_daily(self, driver_id: str, prediction_date: date, location_refs: list[str]) -> dict[str, Any]:
         locations = self.resolver.resolve_many(location_refs)
         plan = self.optimizer.optimize(driver_id=driver_id, prediction_date=prediction_date, locations=locations)

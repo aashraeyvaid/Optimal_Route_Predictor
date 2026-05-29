@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Optimal Route Predictor Dashboard</title>
+    <link rel="stylesheet" href="/ui/styles.css">
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">AI route planning demo</p>
+          <h1>Predict the cleanest driver route before the day begins.</h1>
+          <p class="hero-copy">
+            Select a driver and customer stops, then see the optimized path, ETA,
+            distance, confidence, and leg-by-leg route reasoning in one place.
+          </p>
+        </div>
+        <div class="system-card" id="systemCard">
+          <span class="status-dot"></span>
+          <div>
+            <strong>Loading model</strong>
+            <small>Reading service health...</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="layout">
+        <aside class="control-panel">
+          <div class="panel-header">
+            <span>Planner inputs</span>
+            <button class="ghost-button" id="resetStopsButton" type="button">Reset demo</button>
+          </div>
+
+          <label class="field-label" for="driverSelect">Driver</label>
+          <select id="driverSelect" class="input"></select>
+          <div class="driver-profile" id="driverProfile">Driver profile will appear here.</div>
+
+          <div class="split-fields">
+            <label>
+              <span class="field-label">Daily date</span>
+              <input id="dateInput" class="input" type="date" value="2026-05-20">
+            </label>
+            <label>
+              <span class="field-label">Weekly plan</span>
+              <input id="weekInput" class="input" type="week" value="2026-W20">
+            </label>
+          </div>
+
+          <label class="field-label" for="locationSearch">Search locations</label>
+          <input id="locationSearch" class="input" type="search" placeholder="Search code, store, region, traffic">
+
+          <div class="selected-bar">
+            <span>Selected stops</span>
+            <strong id="selectedCount">0</strong>
+          </div>
+          <div class="selected-stops" id="selectedStops"></div>
+
+          <div class="location-grid" id="locationGrid"></div>
+
+          <div class="actions">
+            <button class="primary-button" id="dailyButton" type="button">Predict daily route</button>
+            <button class="secondary-button" id="weeklyButton" type="button">Generate weekly plan</button>
+          </div>
+
+          <p class="hint">
+            Tip: choose 4 to 8 stops for the clearest demo. The model still handles
+            single-stop and larger routes.
+          </p>
+        </aside>
+
+        <section class="workspace">
+          <div class="metrics-grid" id="metricsGrid">
+            <article class="metric-card">
+              <span>Predicted time</span>
+              <strong>-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Distance</span>
+              <strong>-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Confidence</span>
+              <strong>-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Route score</span>
+              <strong>-</strong>
+            </article>
+          </div>
+
+          <div class="map-card">
+            <div class="card-title-row">
+              <div>
+                <p class="eyebrow">Visual path</p>
+                <h2 id="mapTitle">Route map</h2>
+              </div>
+              <span class="source-pill" id="sourcePill">Waiting for prediction</span>
+            </div>
+            <svg id="routeMap" class="route-map" viewBox="0 0 1000 620" role="img" aria-label="Route visualization"></svg>
+            <div class="map-legend">
+              <span><i class="legend-hub"></i>Driver hub</span>
+              <span><i class="legend-stop"></i>Customer stop</span>
+              <span><i class="legend-line"></i>Recommended path</span>
+            </div>
+          </div>
+
+          <div class="results-grid">
+            <article class="result-card">
+              <div class="card-title-row">
+                <div>
+                  <p class="eyebrow">Daily recommendation</p>
+                  <h2>Stop order</h2>
+                </div>
+              </div>
+              <div class="route-sequence" id="routeSequence">
+                Run a daily prediction to see the ordered route.
+              </div>
+            </article>
+
+            <article class="result-card">
+              <div class="card-title-row">
+                <div>
+                  <p class="eyebrow">Route dimensions</p>
+                  <h2>Leg details</h2>
+                </div>
+              </div>
+              <div class="legs-table-wrap">
+                <table class="legs-table">
+                  <thead>
+                    <tr>
+                      <th>From</th>
+                      <th>To</th>
+                      <th>Km</th>
+                      <th>ETA</th>
+                      <th>Traffic</th>
+                    </tr>
+                  </thead>
+                  <tbody id="legsTable">
+                    <tr><td colspan="5">No route calculated yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+
+          <article class="weekly-card">
+            <div class="card-title-row">
+              <div>
+                <p class="eyebrow">Weekly schedule</p>
+                <h2>Driver workload by day</h2>
+              </div>
+              <span id="weeklySummary">Generate a week to compare workload.</span>
+            </div>
+            <div class="weekly-grid" id="weeklyGrid"></div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <template id="locationCardTemplate">
+      <button class="location-card" type="button">
+        <strong></strong>
+        <span></span>
+        <small></small>
+      </button>
+    </template>
+
+    <script src="/ui/app.js"></script>
+  </body>
+</html>
+

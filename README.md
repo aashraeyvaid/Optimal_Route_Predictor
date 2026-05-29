@@ -12,6 +12,7 @@ An AI-based route prediction system for field sales drivers. It learns from hist
 - SQLite caching for Google API responses.
 - Offline deterministic fallback when `GOOGLE_MAPS_API_KEY` is not configured, so development and tests still run.
 - FastAPI endpoints for daily prediction, weekly prediction, retraining, health checks, rerouting, nearby places, and model monitoring.
+- Interactive browser dashboard for selecting drivers/stops, visualizing routes, comparing metrics, and reviewing weekly workload.
 - Dockerfile and unit tests.
 
 ## Project Structure
@@ -40,6 +41,10 @@ project/
 │   ├── train_model.py
 │   └── smoke_test.py
 ├── tests/
+├── ui/
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
 ├── README.md
 ├── requirements.txt
 └── Dockerfile
@@ -56,6 +61,12 @@ python scripts/train_model.py
 uvicorn api.main:app --reload
 ```
 
+Open the dashboard at:
+
+```text
+http://127.0.0.1:8000/
+```
+
 Open the API docs at:
 
 ```text
@@ -69,6 +80,10 @@ $env:GOOGLE_MAPS_API_KEY="your-google-maps-platform-key"
 ```
 
 Without a key, the app uses the synthetic locations plus a haversine/traffic fallback. This keeps the assignment fully runnable while preserving real Google API integration for production.
+
+## Dashboard UI
+
+The dashboard is served by FastAPI at `/`. It lets a reviewer select a driver, choose store stops, run daily prediction, inspect the optimized route on a coordinate-based map, and compare route dimensions such as ETA, distance, confidence, route score, traffic time, and leg-by-leg travel. It also includes a weekly planner that shows each day's stop sequence and workload summary.
 
 ## API Endpoints
 
@@ -175,7 +190,7 @@ python -m unittest discover -s tests
 Expected result:
 
 ```text
-Ran 8 tests
+Ran 9 tests
 OK
 ```
 

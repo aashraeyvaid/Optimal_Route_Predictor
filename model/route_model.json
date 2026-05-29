@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "trained_at": "2026-05-23T18:28:04.763420+00:00",
+  "trained_at": "2026-05-29T12:36:31.829151+00:00",
   "feature_columns": [
     "distance_km",
     "stop_count",

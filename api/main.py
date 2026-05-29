@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from api.schemas import DailyRouteRequest, GeocodeRequest, NearbyPlacesRequest, RerouteRequest, RetrainRequest, WeeklyRouteRequest
 from optimal_route_predictor import __version__
 from optimal_route_predictor.service import RoutePredictionService
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+UI_DIR = ROOT_DIR / "ui"
 
 app = FastAPI(
     title="AI Optimal Route Predictor",
@@ -16,15 +22,33 @@ app = FastAPI(
     description="AI-based daily and weekly route sequence prediction with Google Maps/Places integration.",
 )
 
+if UI_DIR.exists():
+    app.mount("/ui", StaticFiles(directory=UI_DIR), name="ui")
+
 
 @lru_cache(maxsize=1)
 def get_service() -> RoutePredictionService:
     return RoutePredictionService()
 
 
+@app.get("/", include_in_schema=False)
+def dashboard() -> FileResponse:
+    return FileResponse(UI_DIR / "index.html")
+
+
 @app.get("/health")
 def health() -> dict:
     return get_service().health()
+
+
+@app.get("/drivers")
+def drivers() -> list[dict]:
+    return get_service().list_drivers()
+
+
+@app.get("/locations")
+def locations() -> list[dict]:
+    return get_service().list_locations()
 
 
 @app.post("/predict/daily")
